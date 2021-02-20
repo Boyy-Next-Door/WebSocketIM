@@ -10,7 +10,7 @@ const (
 )
 
 //用户map key为当前连接的connId value为对应Connection 通过维护connId到userId的映射来存储登陆关系
-var allConnection = make(map[int64]*Connection, MaxConnNum)
+var AllConnection = make(map[int64]*Connection, MaxConnNum)
 
 //connId到userId的映射
 var CtoU = make(map[int64]string, MaxConnNum)
@@ -26,7 +26,7 @@ var addLock sync.Mutex
 var idLock sync.Mutex
 
 func GetConn(connId int64) (conn *Connection, err error) {
-	conn, exist := allConnection[connId]
+	conn, exist := AllConnection[connId]
 	if !exist {
 		err = errors.New("connId不存在")
 	}
@@ -36,21 +36,21 @@ func GetConn(connId int64) (conn *Connection, err error) {
 func AddConn(conn *Connection) (err error) {
 	addLock.Lock()
 	defer addLock.Unlock()
-	_, exist := allConnection[conn.ConnId]
+	_, exist := AllConnection[conn.ConnId]
 	if exist {
 		err = errors.New("connId已存在")
 	} else {
-		allConnection[conn.ConnId] = conn
+		AllConnection[conn.ConnId] = conn
 	}
 	return
 }
 
 func RemoveConn(connId int64) (err error) {
-	_, exist := allConnection[connId]
+	_, exist := AllConnection[connId]
 	if exist {
 		err = errors.New("connId不存在")
 	} else {
-		delete(allConnection, connId)
+		delete(AllConnection, connId)
 	}
 	return
 }
@@ -84,10 +84,10 @@ func Logout(userId string) {
 
 //账号被他人登录 强制下线
 func forceToLogout(connId int64) {
-	if connection, exist := allConnection[connId]; exist {
+	if connection, exist := AllConnection[connId]; exist {
 		//todo 向被强制下线的客户端发送一条通知
 		//sendMessage("你被强制下线啦")
-		delete(allConnection, connId)
+		delete(AllConnection, connId)
 		connection.Close()
 	}
 }

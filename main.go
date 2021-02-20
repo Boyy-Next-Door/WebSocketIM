@@ -2,11 +2,16 @@ package main
 
 import (
 	"WebSocketIM/connection"
+	"WebSocketIM/consumer"
+	"WebSocketIM/datasource"
+	"WebSocketIM/mq"
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -40,10 +45,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	if conn, err = connection.InitConnection(wsConn); err != nil {
 		goto ERR
 	}
-	//加入连接中心
-	if err = connection.AddConn(conn); err != nil {
-		goto ERR
-	}
+
 	return
 ERR:
 	//conn.WriteMessage(([]byte)("error:"+err.Error()))
@@ -81,9 +83,56 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func main() {
+func chatHandler(w http.ResponseWriter, r *http.Request) {
+	t, _ := template.ParseFiles("./im.html")
+	t.Execute(w, nil)
+}
+func historyHandler(w http.ResponseWriter, r *http.Request) {
+	defer r.Body.Close()
 
+	method := r.Method
+	log.Println(method, ": getHistory ", r.RemoteAddr) //获取请求的方法
+
+	data := r.URL.Query()
+	userId := data.Get("userId")
+	fmt.Println(userId)
+	targetId := data.Get("targetId")
+	fmt.Println(targetId)
+	timeUnix, err := strconv.Atoi(data.Get("timeBefore"))
+	if err != nil {
+		w.Write([]byte("parameter error."))
+		return
+	}
+	timeBefore := time.Unix(int64(timeUnix), 0)
+	fmt.Println(timeBefore)
+
+	num, err := strconv.Atoi(data.Get("num"))
+	if err != nil {
+		w.Write([]byte("parameter error."))
+		return
+	}
+	fmt.Println(num)
+
+	ret := make([]connection.Message, 0)
+
+	//装载数据
+	datasource.Select(datasource.SelectHistory, &ret, userId, targetId, timeBefore, num, targetId, userId, timeBefore, num, num)
+
+	marshal, _ := json.Marshal(ret)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(marshal)
+}
+func main() {
+	datasource.InitDB()
+	mq.Init()
+	consumer.Init()
 	http.HandleFunc("/ws", wsHandler)
 	http.HandleFunc("/upload", uploadHandler)
-	http.ListenAndServe("0.0.0.0:7777", nil)
+	http.HandleFunc("/chat", chatHandler)
+	http.HandleFunc("/getHistory", historyHandler)
+	err := http.ListenAndServe("0.0.0.0:7777", nil)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	//mongodb.Init()
 }
