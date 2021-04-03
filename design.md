@@ -15,8 +15,8 @@
 - ws://ip:port/ws 建立websocket连接
 -	websocket内部报文：	
 ```golang
-  SEND       = 1
-  REVOKE     = 2
+  	SEND       = 1
+  	REVOKE     = 2
 	LOGIN      = 3
 	LOGOUT     = 4
 	READ_ACK   = 5
