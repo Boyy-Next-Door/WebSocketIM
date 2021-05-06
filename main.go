@@ -4,6 +4,7 @@ import (
 	"WebSocketIM/connection"
 	"WebSocketIM/consumer"
 	"WebSocketIM/datasource"
+	"WebSocketIM/grpc/server"
 	"WebSocketIM/mq"
 	"crypto/md5"
 	"encoding/json"
@@ -17,6 +18,12 @@ import (
 	"strconv"
 	"time"
 )
+
+// todo 从配置文件中读
+// 所有节点（包括zk和node两种类型） 都需要占用两个端口
+// 对于zookeeper: 一个端口用于开启http服务 提供聊天页面访问、获取node、服务监控等功能 / 一个用于开启gRPC server 供node远程调用
+// 对于node：	 一个端口用于开启http服务 供sdk升级成websocket连接、通过http请求拉取聊天记录  / 一个用于开启gRPC server 供zookeeper远程调用
+const HttpAddress = "0.0.0.0:7001"
 
 var (
 	upgrader = websocket.Upgrader{
@@ -123,14 +130,21 @@ func historyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(marshal)
 }
 func main() {
+	// 初始化db
 	datasource.InitDB()
+	// 初始化消息队列
 	mq.Init()
+	// 初始化消息队列的消费者
 	consumer.Init()
+	// 初始化gRPC服务端
+	grpcServer.InitGRPC()
+
+	// 绑定http服务器路由并开启http服务
 	http.HandleFunc("/ws", wsHandler)
 	http.HandleFunc("/upload", uploadHandler)
-	http.HandleFunc("/chat", chatHandler)
+	//http.HandleFunc("/chat", chatHandler)		// 聊天页面请求转移到zookeeper中
 	http.HandleFunc("/getHistory", historyHandler)
-	err := http.ListenAndServe("0.0.0.0:7777", nil)
+	err := http.ListenAndServe(HttpAddress, nil)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

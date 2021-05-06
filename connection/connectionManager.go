@@ -77,6 +77,7 @@ func Login(userId string, conn *Connection) (err error) {
 }
 
 func Logout(userId string) {
+	// todo 这里还应该关闭连接 且关闭前发送一个被挤下线的提示给用户
 	connId := UtoC[userId]
 	delete(UtoC, userId)
 	delete(CtoU, connId)
@@ -92,10 +93,37 @@ func forceToLogout(connId int64) {
 	}
 }
 
+// 获取一个新的连接id
 func GetNewConnId() (ret int64) {
 	idLock.Lock()
 	MaxConnId++
 	ret = MaxConnId
 	idLock.Unlock()
 	return
+}
+
+// 查询某一个用户是否在线
+func IsOnline(userId string) bool {
+	_, exist := UtoC[userId]
+	return exist
+}
+
+// 供grpc接口使用 从参数中获取msg 写入指定userId的conn中
+func SendMessage(userId string, msg Message) error {
+	connId, exist := UtoC[userId]
+	if !exist {
+		return errors.New("userId不存在 目标用户不在本节点")
+	}
+	conn, exist := AllConnection[connId]
+	if !exist {
+		return errors.New("connId不存在 节点数据异常")
+	}
+
+	select {
+	case conn.inChan <- msg:
+		return nil
+	case <-conn.closeChan: // closeChan 感知 conn断开
+		return errors.New("本节点与目标用户连接中断 发送失败")
+	}
+
 }

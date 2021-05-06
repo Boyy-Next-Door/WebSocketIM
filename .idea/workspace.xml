@@ -23,12 +23,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="68998375-b54e-4083-8562-f49b9246f9a8" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/WebSocketIM.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/grpc/client/client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/grpc/client/client_test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/grpc/client/test.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/grpc/proto/node.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/grpc/proto/node.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/grpc/proto/node_grpc.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/grpc/server/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connection/connectionManager.go" beforeDir="false" afterPath="$PROJECT_DIR$/connection/connectionManager.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connection/impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/connection/impl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/consumer/comsumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/consumer/comsumer.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-test/hello/client/client.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-test/hello/server/server.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-test/proto/hello.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-test/proto/hello.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-test/proto/hello_grpc.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +55,7 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" path="C:\Users\georgayang\sdk\go1.16.2" />
+  <component name="GOROOT" url="file://D:/golang" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -57,13 +70,15 @@
   <component name="PropertiesComponent">
     <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="configurable.Global.GOPATH.is.expanded" value="true" />
     <property name="configurable.Module.GOPATH.is.expanded" value="false" />
     <property name="configurable.Project.GOPATH.is.expanded" value="true" />
     <property name="go.import.settings.migrated" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/grpc-test/hello/server" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/grpc/proto" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -74,6 +89,8 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\毕业设计\project\IM_cluster\WebSocketIM\grpc\proto" />
+      <recent name="F:\毕业设计\project\IM_cluster\WebSocketIM" />
       <recent name="D:\projects\im\WebSocketIM\grpc-test\hello\server" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -150,6 +167,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

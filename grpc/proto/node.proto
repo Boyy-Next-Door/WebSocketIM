@@ -1,0 +1,53 @@
+syntax = "proto3"; // 指定proto版本
+package node;     // 指定默认包名
+
+// 指定golang包名
+option go_package = "/node";
+
+// 定义服务
+service Node {
+  // 用户挤下线
+  rpc ForceLogout(ForceLogoutRequest) returns (ForceLogoutResponse) {}
+  // 发送消息
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
+}
+
+// ForceLogout 请求结构
+message ForceLogoutRequest {
+  string nodeName = 1;
+  string userId = 2;
+}
+
+// ForceLogout 响应结构
+message ForceLogoutResponse {
+  string code = 1;
+  string msg = 2;
+}
+
+// SendMessage 请求结构
+message SendMessageRequest {
+  // 与IM系统中Message对应的结构体 这里当作grpc发送消息的参数
+  message Message {
+      string MsgId = 1;
+      int32  MsgType = 2;
+      string Data = 3;
+      string FromUid = 4;
+      string ToUid = 5;
+      int64 CreateAt = 6;
+      int32 IsRead = 7;
+      int64 ReadAt = 8;
+      int32 IsRevoke = 9;
+      int64 RevokeAt = 10;
+  }
+
+  string fromNodeName = 1;
+  string fromNodeIp = 2;
+  string fromNodePort = 3;
+  Message message = 4;
+}
+
+// SendMessage 响应结构
+message SendMessageResponse {
+  string code = 1;
+  string msg = 2;
+}

@@ -28,15 +28,15 @@ func myHandler(data interface{}) {
 			readAt, exist := ackMap[message.MsgId]
 			//并且在expire前得到了ack
 			if exist {
-				//消息入库
+				// 按照已读消息入库
 				_, err := datasource.Insert(datasource.InsertMessageRead, message.MsgId, message.MsgType, message.Data, message.FromUid, message.ToUid, message.CreateAt, readAt)
 				if err != nil {
 					log.Printf("message %+v insert failed at %s.", message.MsgId, time.Now().Format("2006/01/02 15:04:05"))
 				}
-				//移除ackMap中该条记录
+				// 移除ackMap中该条记录
 				delete(ackMap, message.MsgId)
 			} else {
-				//没有得到ack 按照未读消息入库
+				// 没有得到ack 按照未读消息入库
 				_, err := datasource.Insert(datasource.InsertMessage, message.MsgId, message.MsgType, message.Data, message.FromUid, message.ToUid, message.CreateAt)
 				if err != nil {
 					log.Printf("message %+v insert failed at %s.", message.MsgId, time.Now().Format("2006/01/02 15:04:05"))
@@ -102,6 +102,7 @@ func workLoop() {
 
 				connId, exist := connection.UtoC[msg.ToUid]
 				if exist {
+					// 目标用户在线 将该条send消息存入延时队列 为的是接受在几秒钟内到达的readACK 之后再写入数据库 减小写库压力
 					dq.TPush(msg)
 					c := connection.AllConnection[connId]
 					c.WriteMessage(msg)
