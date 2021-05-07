@@ -3,19 +3,13 @@ package grpcServer
 import (
 	"WebSocketIM/connection"
 	pb "WebSocketIM/grpc/node/proto" // 引入编译生成的包
+	"WebSocketIM/static"
 	"fmt"
 	"github.com/wonderivan/logger"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"net"
 	"time"
-)
-
-var (
-	// todo 要通过配置文件读入
-	ZooKeeperAddress = "127.0.0.1:50052" //  zookeeper的gRPC服务地址
-	NodeName         = "node_01"
-	NodeAddress      = "127.0.0.1：50060"
 )
 
 // 定义nodeServer并实现约定的接口
@@ -33,7 +27,7 @@ func (nodeServer) ForceLogout(c context.Context, r *pb.ForceLogoutRequest) (*pb.
 	logger.Info("ForceLogout from zookeeper --- ", r.NodeName, r.UserId)
 
 	var response *pb.ForceLogoutResponse // 校验参数
-	if r.NodeName != NodeName {
+	if r.NodeName != static.Name {
 		response = &pb.ForceLogoutResponse{
 			Code: "1",
 			Msg:  "参数节点名不正确",
@@ -41,7 +35,7 @@ func (nodeServer) ForceLogout(c context.Context, r *pb.ForceLogoutRequest) (*pb.
 		return response, nil
 	}
 
-	// 本届点指定用户挤下线
+	// 本节点指定用户挤下线 直接释放掉connection
 	connection.Logout(r.UserId)
 	response = &pb.ForceLogoutResponse{
 		Code: "0",
@@ -52,12 +46,12 @@ func (nodeServer) ForceLogout(c context.Context, r *pb.ForceLogoutRequest) (*pb.
 }
 
 func (nodeServer) SendMessage(c context.Context, r *pb.SendMessageRequest) (*pb.SendMessageResponse, error) {
-	logger.Info("SendMessage from "+r.FromNodeIp+":"+r.FromNodePort+" --- "+r.FromNodeName, r.Message)
+	logger.Info("SendMessage from "+r.FromNodeAddr+" --- "+r.FromNodeName, r.Message)
 
 	var response *pb.SendMessageResponse
 
 	// 转换proto请求中的message为IM中的message
-	message := convertMessage(r.Message)
+	message := ConvertMessage(r.Message)
 
 	// 检查目标用户是否存在
 	if !connection.IsOnline(message.ToUid) {
@@ -86,8 +80,8 @@ func (nodeServer) SendMessage(c context.Context, r *pb.SendMessageRequest) (*pb.
 	return response, nil
 }
 
-func convertMessage(msg *pb.SendMessageRequest_Message) connection.Message {
-	retMsg := connection.Message{}
+func ConvertMessage(msg *pb.SendMessageRequest_Message) static.Message {
+	retMsg := static.Message{}
 	retMsg.MsgId = msg.MsgId
 	retMsg.MsgType = int(msg.MsgType)
 	retMsg.Data = msg.Data
@@ -103,7 +97,7 @@ func convertMessage(msg *pb.SendMessageRequest_Message) connection.Message {
 }
 
 func InitGRPC() {
-	listen, err := net.Listen("tcp", NodeAddress)
+	listen, err := net.Listen("tcp", static.NodeAddress)
 	if err != nil {
 		fmt.Println("Failed to listen: %v", err)
 	}
@@ -114,6 +108,6 @@ func InitGRPC() {
 	// 注册HelloService
 	pb.RegisterNodeServer(s, NodeServer)
 
-	fmt.Println("gRPC server listen on " + NodeAddress)
+	fmt.Println("gRPC server listen on " + static.NodeAddress)
 	go s.Serve(listen)
 }

@@ -41,9 +41,8 @@ message SendMessageRequest {
   }
 
   string fromNodeName = 1;
-  string fromNodeIp = 2;
-  string fromNodePort = 3;
-  Message message = 4;
+  string fromNodeAddr = 2;
+  Message message = 3;
 }
 
 // SendMessage 响应结构

@@ -1,6 +1,8 @@
 package connection
 
 import (
+	nodeClient "WebSocketIM/grpc/node/client"
+	"WebSocketIM/static"
 	"errors"
 	"sync"
 )
@@ -60,27 +62,37 @@ func Login(userId string, conn *Connection) (err error) {
 		err = errors.New("userId为空")
 	} else {
 		conn.UserId = userId
-		//todo 多端登陆逻辑
-		//暂时只实现一端登陆
-		//强制下线
+		// todo 多端登陆逻辑
+		// 暂时只实现一端登陆
+		// 强制下线
 		if oldConnId, exist := UtoC[userId]; exist {
 			//移除connID → UserId 的映射
 			delete(CtoU, oldConnId)
 			forceToLogout(oldConnId)
 		}
 
-		//记录新的id映射关系
+		// 记录新的id映射关系
 		UtoC[userId] = conn.ConnId
 		CtoU[conn.ConnId] = userId
+
+		// 通告zookeeper 忽略失败的远程调用
+		nodeClient.UserCheckIn(userId)
 	}
 	return
 }
 
 func Logout(userId string) {
-	// todo 这里还应该关闭连接 且关闭前发送一个被挤下线的提示给用户
+	// todo 这里还应该关闭连接
 	connId := UtoC[userId]
 	delete(UtoC, userId)
 	delete(CtoU, connId)
+	conn, exist := AllConnection[connId]
+	// 释放该连接
+	if exist {
+		conn.Close()
+	}
+	// 通告zookeeper 忽略失败的远程调用
+	nodeClient.UserCheckOut(userId)
 }
 
 //账号被他人登录 强制下线
@@ -109,7 +121,7 @@ func IsOnline(userId string) bool {
 }
 
 // 供grpc接口使用 从参数中获取msg 写入指定userId的conn中
-func SendMessage(userId string, msg Message) error {
+func SendMessage(userId string, msg static.Message) error {
 	connId, exist := UtoC[userId]
 	if !exist {
 		return errors.New("userId不存在 目标用户不在本节点")

@@ -2,12 +2,12 @@ package connection
 
 import (
 	"WebSocketIM/mq"
+	static "WebSocketIM/static"
 	"encoding/json"
 	"errors"
 	"github.com/gorilla/websocket"
 	"log"
 	"sync"
-	time "time"
 )
 
 //MsgType
@@ -23,8 +23,8 @@ const (
 
 type Connection struct {
 	wsConnect *websocket.Conn
-	inChan    chan Message
-	outChan   chan Message
+	inChan    chan static.Message
+	outChan   chan static.Message
 	closeChan chan byte
 
 	mutex    sync.Mutex // 对closeChan关闭上锁
@@ -33,27 +33,11 @@ type Connection struct {
 	UserId   string     // 该连接绑定的用户id
 }
 
-// 客户端读写消息
-type Message struct {
-	// websocket.TextMessage 消息类型
-	id       int       `db:"id"`
-	MsgId    string    `json:"msgId" db:"msgId"`
-	MsgType  int       `json:"msgType"  db:"msgType"`
-	Data     string    `json:"data"  db:"data"`
-	FromUid  string    `json:"fromUid"  db:"fromUid"`
-	ToUid    string    `json:"toUid" db:"toUid"`
-	CreateAt time.Time `json:"createAt" db:"createAt"`
-	IsRead   int       `json:"isRead" db:"isRead"`
-	ReadAt   time.Time `json:"readAt" db:"readAt"`
-	IsRevoke int       `json:"isRevoke" db:"isRevoke"`
-	RevokeAt time.Time `json:"revokeAt" db:"revokeAt"`
-}
-
 func InitConnection(wsConn *websocket.Conn) (conn *Connection, err error) {
 	conn = &Connection{
 		wsConnect: wsConn,
-		inChan:    make(chan Message, 1000),
-		outChan:   make(chan Message, 1000),
+		inChan:    make(chan static.Message, 1000),
+		outChan:   make(chan static.Message, 1000),
 		closeChan: make(chan byte, 1),
 		ConnId:    GetNewConnId(),
 	}
@@ -73,7 +57,7 @@ func InitConnection(wsConn *websocket.Conn) (conn *Connection, err error) {
 	return
 }
 
-func (conn *Connection) ReadMessage() (msg Message, err error) {
+func (conn *Connection) ReadMessage() (msg static.Message, err error) {
 
 	select {
 	case msg = <-conn.inChan:
@@ -83,7 +67,7 @@ func (conn *Connection) ReadMessage() (msg Message, err error) {
 	return
 }
 
-func (conn *Connection) WriteMessage(msg Message) (err error) {
+func (conn *Connection) WriteMessage(msg static.Message) (err error) {
 
 	select {
 	case conn.outChan <- msg:
@@ -133,7 +117,7 @@ ERR:
 
 func (conn *Connection) writeLoop() {
 	var (
-		data Message
+		data static.Message
 		err  error
 	)
 
@@ -175,7 +159,7 @@ func (conn *Connection) processLoop() {
 			//fromUid即登录id
 			Login(msg.FromUid, conn)
 			//响应客户端
-			conn.WriteMessage(Message{
+			conn.WriteMessage(static.Message{
 				MsgId:   msg.MsgId,
 				MsgType: LOGIN,
 				Data:    "登陆成功",
@@ -194,19 +178,8 @@ func (conn *Connection) processLoop() {
 	}
 }
 
-func parseMessage(data []byte) (msg Message) {
+func parseMessage(data []byte) (msg static.Message) {
 	//解析数据
 	json.Unmarshal(data, &msg)
 	return
-}
-
-func (d Message) MarshalJSON() ([]byte, error) {
-	type Alias Message
-	return json.Marshal(&struct {
-		Alias
-		CreateAt string `json:"createAt"`
-	}{
-		Alias:    Alias(d),
-		CreateAt: time.Time(d.CreateAt).Format("2006-01-02 15:04:05"),
-	})
 }

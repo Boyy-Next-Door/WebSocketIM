@@ -23,28 +23,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="68998375-b54e-4083-8562-f49b9246f9a8" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/MyZooKeeper.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/grpc/node/client/client.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/grpc/zookeeper/client/test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/grpc/zookeeper/nodeManager/node_manager.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/grpc/zookeeper/proto/zookeeper.pb.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/grpc/zookeeper/proto/zookeeper.proto" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/grpc/zookeeper/proto/zookeeper_grpc.pb.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/grpc/zookeeper/server/server.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/util/ParamCheckUtil.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/util/ResponseUtil.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/html/im.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/static/staticVar.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/consumer/comsumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/connection/comsumer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/grpc/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/zookeeper/client/client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/grpc/client/client_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/grpc/client/test.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/client/test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/grpc/proto/node.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/proto/node.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/grpc/proto/node.proto" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/proto/node.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/grpc/proto/node_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/proto/node_grpc.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/grpc/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/server/server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/im.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/connection/comsumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/connection/comsumer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connection/connectionManager.go" beforeDir="false" afterPath="$PROJECT_DIR$/connection/connectionManager.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connection/impl.go" beforeDir="false" afterPath="$PROJECT_DIR$/connection/impl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/node/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/client/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/node/client/test.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/client/test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/node/proto/node.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/proto/node.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/node/proto/node.proto" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/proto/node.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/node/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/server/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/zookeeper/client/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/zookeeper/client/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/zookeeper/client/test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/zookeeper/nodeManager/node_manager.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/zookeeper/nodeManager/node_manager.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/zookeeper/proto/zookeeper.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/zookeeper/proto/zookeeper.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/zookeeper/proto/zookeeper.proto" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/zookeeper/proto/zookeeper.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/zookeeper/proto/zookeeper_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/zookeeper/proto/zookeeper_grpc.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/zookeeper/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/zookeeper/server/server.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -82,17 +78,18 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/grpc/zookeeper/client" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="settings.editor.selected.configurable" value="go.vgo" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\毕业设计\project\IM_cluster\WebSocketIM\grpc\zookeeper\client" />
       <recent name="F:\毕业设计\project\IM_cluster\WebSocketIM" />
       <recent name="F:\毕业设计\project\IM_cluster\WebSocketIM\grpc\zookeeper" />
       <recent name="F:\毕业设计\project\IM_cluster\WebSocketIM\grpc\proto" />
@@ -136,7 +133,7 @@
     <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="WebSocketIM" />
       <working_directory value="$PROJECT_DIR$" />
-      <parameters value="-m zookeeper -n zk_01 -h 127.0.0.1:7777 -g 127.0.0.1:50050 " />
+      <parameters value="-m node -n node_01 -h 127.0.0.1:8888 -g 127.0.0.1:50051 -z 127.0.0.1:50050" />
       <kind value="FILE" />
       <filePath value="$PROJECT_DIR$/main.go" />
       <package value="WebSocketIM" />
@@ -191,15 +188,15 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+        <line-breakpoint type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/grpc-test/hello/client/client.go</url>
           <line>32</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/main.go</url>
-          <line>181</line>
-          <option name="timeStamp" value="2" />
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/grpc/node/client/client.go</url>
+          <line>169</line>
+          <option name="timeStamp" value="7" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

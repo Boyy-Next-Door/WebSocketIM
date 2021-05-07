@@ -8,6 +8,7 @@ import (
 	Manager "WebSocketIM/grpc/zookeeper/nodeManager"
 	zkServer "WebSocketIM/grpc/zookeeper/server"
 	"WebSocketIM/mq"
+	"WebSocketIM/static"
 	"WebSocketIM/util"
 	ResponseUtil "WebSocketIM/util"
 	"crypto/md5"
@@ -29,10 +30,6 @@ import (
 // 所有节点（包括zk和node两种类型） 都需要占用两个端口
 // 对于zookeeper: 一个端口用于开启http服务 提供聊天页面访问、获取node、服务监控等功能 / 一个用于开启gRPC server 供node远程调用
 // 对于node：	 一个端口用于开启http服务 供sdk升级成websocket连接、通过http请求拉取聊天记录  / 一个用于开启gRPC server 供zookeeper远程调用
-var (
-	NodeHttpAddress = ""
-	ZKhttpAddr      = ""
-)
 
 var (
 	upgrader = websocket.Upgrader{
@@ -131,7 +128,7 @@ func historyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(num)
 
-	ret := make([]connection.Message, 0)
+	ret := make([]static.Message, 0)
 
 	//装载数据
 	datasource.Select(datasource.SelectHistory, &ret, userId, targetId, timeBefore, num, targetId, userId, timeBefore, num, num)
@@ -200,17 +197,17 @@ func main() {
 	//根据启动的模式装载server参数
 	if mode == "node" {
 		// node模式
-		NodeHttpAddress = httpAddr
-		nodeServer.NodeAddress = grpcAddr
-		nodeServer.NodeName = name
-		nodeClient.ZKAddr = zkAddr
+		static.HttpAddress = httpAddr
+		static.NodeAddress = grpcAddr
+		static.Name = name
+		static.ZooKeeperAddress = zkAddr
 		// 启动服务
 		runNode()
 	} else {
 		// zookeeper模式
-		ZKhttpAddr = httpAddr
-		zkServer.ZKgrpcAddr = grpcAddr
-		zkServer.ZKname = name
+		static.HttpAddress = httpAddr
+		static.Name = name
+		static.ZooKeeperAddress = grpcAddr
 
 		// 启动服务
 		runZooKeeper()
@@ -232,14 +229,13 @@ func runNode() {
 		logger.Error("注册失败")
 		return
 	}
-	// 持续心跳
-	go nodeClient.HeatBeating()
 
 	// 绑定http服务器路由并开启http服
+	logger.Info("server start on ", static.HttpAddress)
 	http.HandleFunc("/ws", wsHandler)
 	http.HandleFunc("/upload", uploadHandler)
 	http.HandleFunc("/getHistory", historyHandler)
-	err := http.ListenAndServe(NodeHttpAddress, nil)
+	err := http.ListenAndServe(static.HttpAddress, nil)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -251,10 +247,10 @@ func runZooKeeper() {
 	zkServer.InitGRPC()
 
 	// 绑定http服务器的路由并开启服务
-	fmt.Println("server start on ", ZKhttpAddr)
+	logger.Info("server start on ", static.HttpAddress)
 	http.HandleFunc("/chat", chatHandler)
 	http.HandleFunc("/getNode", getNodeHandler)
-	err := http.ListenAndServe(ZKhttpAddr, nil)
+	err := http.ListenAndServe(static.HttpAddress, nil)
 	if err != nil {
 		logger.Error(err.Error())
 	}

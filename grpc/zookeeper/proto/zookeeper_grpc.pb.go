@@ -243,5 +243,5 @@ var ZooKeeper_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "grpc/proto/zookeeper.proto",
+	Metadata: "grpc/zookeeper/proto/zookeeper.proto",
 }

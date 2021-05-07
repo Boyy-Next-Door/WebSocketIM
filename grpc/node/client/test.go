@@ -1,12 +1,5 @@
 package client
 
-import (
-//pb "MyZooKeeper/grpc/proto"
-//"fmt"
-//"golang.org/x/net/context"
-//"google.golang.org/grpc"
-)
-
 func main() {
 	////start := time.Now()
 	//// 连接
@@ -19,7 +12,7 @@ func main() {
 	//// 初始化客户端
 	//c := pb.NewZooKeeperClient(conn)
 	//
-	//// 查询用户
+	// 查询用户
 	//req1 := &pb.FindUserRequest{NodeName: "node_01", UserId: "杨噶劲"}
 	//res1, err1 := c.FindUser(context.Background(), req1)
 	//if err1 != nil {

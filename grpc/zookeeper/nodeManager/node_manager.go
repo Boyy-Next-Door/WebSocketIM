@@ -22,8 +22,7 @@ const LoadThreshold = 0.9    // 当节点负载达到百分之90时，开始将�
 // node定义
 type Node struct {
 	NodeName     string     `json:"nodeName,omitempty"`
-	NodeIp       string     `json:"nodeIp,omitempty"`
-	NodePort     string     `json:"nodePort,omitempty"`
+	NodeAddr     string     `json:"nodeAddr,omitempty"`
 	LastHeatBeat int64      `json:"-"` // 上一次心跳时间戳
 	Status       int        `json:"-"` // 节点状态  1-正常 0-死亡
 	UserSet      mapset.Set `json:"-"` // 当前登录用户set
@@ -263,5 +262,14 @@ func (manager *Manager) FindUser(userId string) (Node, error) {
 		return manager.NodeMap[targetNodeName], nil
 	} else {
 		return Node{}, errors.New("目标用户未登录")
+	}
+}
+
+func (manager *Manager) GetNodeAddress(nodeName string) (string, error) {
+	node, exist := manager.NodeMap[nodeName]
+	if exist {
+		return node.NodeAddr, nil
+	} else {
+		return "", errors.New("目标node不存在")
 	}
 }
