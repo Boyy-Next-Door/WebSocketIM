@@ -1,0 +1,71 @@
+syntax = "proto3"; // 指定proto版本
+package zookeeper;     // 指定默认包名
+
+// 指定golang包名
+option go_package = "/zookeeper";
+
+// 定义服务
+service ZooKeeper {
+  // 定义SayHello方法
+  rpc Register(RegisterRequest) returns (RegisterResponse) {}
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
+  rpc UserCheckIn(UserCheckInRequest) returns (UserCheckInResponse) {}
+  rpc UserCheckOut(UserCheckOutRequest) returns (UserCheckOutResponse) {}
+  rpc FindUser(FindUserRequest) returns (FindUserResponse) {}
+}
+
+// RegisterRequest 请求结构
+message RegisterRequest {
+  string nodeName = 1;
+  string nodeIp = 2;
+  string nodePort = 3;
+}
+
+// RegisterResponse 响应结构
+message RegisterResponse {
+  string code = 1;
+  string msg = 2;
+}
+
+// HeartbeatRequest 请求结构
+message HeartbeatRequest {
+  string nodeName = 1;
+  string nodeIp = 2;
+  string nodePort = 3;
+}
+
+// HeartbeatResponse 响应结构
+message HeartbeatResponse {
+  string code = 1;
+  string msg = 2;
+}
+
+message UserCheckInRequest {
+  string userId = 1;
+  string nodeName = 2;
+}
+message UserCheckInResponse {
+  string code = 1;
+  string msg = 2;
+}
+
+message UserCheckOutRequest {
+  string userId = 1;
+  string nodeName = 2;
+}
+message UserCheckOutResponse {
+  string code = 1;
+  string msg = 2;
+}
+
+message FindUserRequest {
+  string userId = 1;
+  string nodeName = 2;
+}
+message FindUserResponse {
+  string code = 1;
+  string msg = 2;
+  string nodeName = 3;
+  string nodeIp = 4;
+  string nodePort = 5;
+}

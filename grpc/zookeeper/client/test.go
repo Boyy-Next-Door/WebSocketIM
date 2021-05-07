@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "MyZooKeeper/grpc/proto"
+	pb "WebSocketIM/grpc/zookeeper/proto" // 引入proto包
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"

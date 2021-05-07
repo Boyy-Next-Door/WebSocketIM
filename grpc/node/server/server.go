@@ -2,7 +2,7 @@ package grpcServer
 
 import (
 	"WebSocketIM/connection"
-	pb "WebSocketIM/grpc/proto" // 引入编译生成的包
+	pb "WebSocketIM/grpc/node/proto" // 引入编译生成的包
 	"fmt"
 	"github.com/wonderivan/logger"
 	"golang.org/x/net/context"
@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const (
+var (
 	// todo 要通过配置文件读入
 	ZooKeeperAddress = "127.0.0.1:50052" //  zookeeper的gRPC服务地址
 	NodeName         = "node_01"

@@ -137,5 +137,5 @@ var Node_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "grpc/proto/node.proto",
+	Metadata: "grpc/node/proto/node.proto",
 }

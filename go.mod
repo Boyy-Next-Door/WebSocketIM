@@ -3,6 +3,7 @@ module WebSocketIM
 go 1.15
 
 require (
+	github.com/deckarep/golang-set v1.7.1
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.5.2 // indirect
