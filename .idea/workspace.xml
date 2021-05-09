@@ -24,6 +24,8 @@
   <component name="ChangeListManager">
     <list default="true" id="68998375-b54e-4083-8562-f49b9246f9a8" name="Default Changelist" comment="完成了cluster_mode的全部修改，单节点聊天测试成功，还需要测试跨服聊天">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connection/comsumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/connection/comsumer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/idgen/generate.go" beforeDir="false" afterPath="$PROJECT_DIR$/util/generate.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,6 +80,7 @@
       <recent name="D:\projects\im\WebSocketIM\grpc-test\hello\server" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="F:\毕业设计\project\IM_cluster\WebSocketIM\util" />
       <recent name="F:\毕业设计\project\IM_cluster\WebSocketIM\connection" />
       <recent name="F:\毕业设计\project\IM_cluster\WebSocketIM\grpc\node" />
       <recent name="F:\毕业设计\project\IM_cluster\WebSocketIM\mq" />
