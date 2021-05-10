@@ -11,7 +11,7 @@ var (
 	Mode             = "" // 当前运行模式
 	ZooKeeperAddress = "" //  zookeeper的gRPC服务地址
 	Name             = "" // 当前节点名
-	NodeAddress      = "" // 当前节点ip:port
+	GrpcAddress      = "" // 当前节点ip:port
 	HttpAddress      = "" // 当前节点的http服务地址
 )
 

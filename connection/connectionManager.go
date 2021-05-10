@@ -59,7 +59,7 @@ func RemoveConn(connId int64) (err error) {
 
 func Login(userId string, conn *Connection) (err error) {
 	if userId == "" {
-		err = errors.New("userId为空")
+		return errors.New("userId为空")
 	} else {
 		conn.UserId = userId
 		// todo 多端登陆逻辑
@@ -78,7 +78,7 @@ func Login(userId string, conn *Connection) (err error) {
 		// 通告zookeeper 忽略失败的远程调用
 		nodeClient.UserCheckIn(userId)
 	}
-	return
+	return nil
 }
 
 func Logout(userId string) {

@@ -97,7 +97,7 @@ func ConvertMessage(msg *pb.SendMessageRequest_Message) static.Message {
 }
 
 func InitGRPC() {
-	listen, err := net.Listen("tcp", static.NodeAddress)
+	listen, err := net.Listen("tcp", static.GrpcAddress)
 	if err != nil {
 		fmt.Println("Failed to listen: %v", err)
 	}
@@ -108,6 +108,6 @@ func InitGRPC() {
 	// 注册HelloService
 	pb.RegisterNodeServer(s, NodeServer)
 
-	fmt.Println("gRPC server listen on " + static.NodeAddress)
+	fmt.Println("gRPC server listen on " + static.GrpcAddress)
 	go s.Serve(listen)
 }

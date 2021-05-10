@@ -22,10 +22,10 @@ type zkServer struct {
 供node远程调用的注册接口
 */
 func (zkServer) Register(c context.Context, r *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	logger.Info("register from ", r.NodeAddr, " --- ", r.NodeName)
+	logger.Info("register from ", r.HttpAddr, " --- ", r.NodeName)
 
 	manager := Manager.GetIns()
-	newNode := Manager.Node{NodeName: r.NodeName, NodeAddr: r.NodeAddr}
+	newNode := Manager.Node{NodeName: r.NodeName, GrpcAddr: r.GrpcAddr, HttpAddr: r.HttpAddr}
 	err := manager.AddNode(newNode)
 
 	var response *pb.RegisterResponse
@@ -47,7 +47,7 @@ func (zkServer) Register(c context.Context, r *pb.RegisterRequest) (*pb.Register
 供node调用的心跳接口
 */
 func (zkServer) Heartbeat(c context.Context, r *pb.HeartbeatRequest) (*pb.HeartbeatResponse, error) {
-	logger.Info("heartbeat from ", r.NodeAddr, " --- ", r.NodeName)
+	logger.Info("heartbeat from ", r.HttpAddr, " --- ", r.NodeName)
 
 	manager := Manager.GetIns()
 	err := manager.HeartBeat(r.NodeName)
@@ -163,7 +163,8 @@ func (zkServer) FindUser(c context.Context, r *pb.FindUserRequest) (*pb.FindUser
 			Code:     "0",
 			Msg:      "find user success.",
 			NodeName: node.NodeName,
-			NodeAddr: node.NodeAddr,
+			GrpcAddr: node.GrpcAddr,
+			HttpAddr: node.HttpAddr,
 		}
 	}
 

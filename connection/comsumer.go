@@ -100,11 +100,11 @@ func workLoop() {
 					c.WriteMessage(msg)
 				} else {
 					// 目标用户可能在其他节点上
-					targetNodeName, targetNodeAddr, err := nodeClient.FindUser(msg.ToUid)
+					targetNodeName, targetGrpcAddr, err := nodeClient.FindUser(msg.ToUid)
 					if err == nil {
 						// 成功查询到目标用户所在的node 发送消息
 						convertMsg := ConvertMessage2(msg)
-						success := nodeClient.SendMessage(targetNodeName, targetNodeAddr, &convertMsg)
+						success := nodeClient.SendMessage(targetNodeName, targetGrpcAddr, &convertMsg)
 						if success {
 							goto flag
 						}
@@ -126,11 +126,11 @@ func workLoop() {
 					})
 				} else {
 					// 目标用户可能在其他节点上
-					targetNodeName, targetNodeAddr, err := nodeClient.FindUser(msg.FromUid)
+					targetNodeName, targetGrpcAddr, err := nodeClient.FindUser(msg.FromUid)
 					if err == nil {
 						// 成功查询到目标用户所在的node 发送消息
 						convertMsg := ConvertMessage2(msg)
-						nodeClient.SendMessage(targetNodeName, targetNodeAddr, &convertMsg)
+						nodeClient.SendMessage(targetNodeName, targetGrpcAddr, &convertMsg)
 					}
 				}
 			}
@@ -149,11 +149,11 @@ func workLoop() {
 					})
 				} else {
 					// 目标用户可能在其他节点上
-					targetNodeName, targetNodeAddr, err := nodeClient.FindUser(msg.ToUid)
+					targetNodeName, targetGrpcAddr, err := nodeClient.FindUser(msg.ToUid)
 					if err == nil {
 						// 成功查询到目标用户所在的node 发送消息
 						convertMsg := ConvertMessage2(msg)
-						nodeClient.SendMessage(targetNodeName, targetNodeAddr, &convertMsg)
+						nodeClient.SendMessage(targetNodeName, targetGrpcAddr, &convertMsg)
 					}
 					// 目标用户不在线 直接修改
 				}
@@ -173,11 +173,11 @@ func workLoop() {
 					})
 				} else {
 					// 目标用户可能在其他节点上
-					targetNodeName, targetNodeAddr, err := nodeClient.FindUser(msg.ToUid)
+					targetNodeName, targetGrpcAddr, err := nodeClient.FindUser(msg.ToUid)
 					if err == nil {
 						// 成功查询到目标用户所在的node 发送消息
 						convertMsg := ConvertMessage2(msg)
-						nodeClient.SendMessage(targetNodeName, targetNodeAddr, &convertMsg)
+						nodeClient.SendMessage(targetNodeName, targetGrpcAddr, &convertMsg)
 					}
 				}
 				//响应发起方
@@ -191,11 +191,11 @@ func workLoop() {
 					})
 				} else {
 					// 目标用户可能在其他节点上
-					targetNodeName, targetNodeAddr, err := nodeClient.FindUser(msg.FromUid)
+					targetNodeName, targetGrpcAddr, err := nodeClient.FindUser(msg.FromUid)
 					if err == nil {
 						// 成功查询到目标用户所在的node 发送消息
 						convertMsg := ConvertMessage2(msg)
-						nodeClient.SendMessage(targetNodeName, targetNodeAddr, &convertMsg)
+						nodeClient.SendMessage(targetNodeName, targetGrpcAddr, &convertMsg)
 					}
 				}
 			}

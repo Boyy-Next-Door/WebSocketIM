@@ -19,6 +19,7 @@ const (
 	READ_ACK   = 5
 	SENT       = 6
 	REVOKE_ACK = 7
+	ERROR      = 8
 )
 
 type Connection struct {
@@ -157,13 +158,21 @@ func (conn *Connection) processLoop() {
 			mq.MyClient.Publish(mq.Topic, msg)
 		case LOGIN:
 			//fromUid即登录id
-			Login(msg.FromUid, conn)
+			err := Login(msg.FromUid, conn)
 			//响应客户端
-			conn.WriteMessage(static.Message{
-				MsgId:   msg.MsgId,
-				MsgType: LOGIN,
-				Data:    "登陆成功",
-			})
+			if err != nil {
+				conn.WriteMessage(static.Message{
+					MsgId:   msg.MsgId,
+					MsgType: ERROR,
+					Data:    "登陆失败: " + err.Error(),
+				})
+			} else {
+				conn.WriteMessage(static.Message{
+					MsgId:   msg.MsgId,
+					MsgType: LOGIN,
+					Data:    "登陆成功",
+				})
+			}
 		case LOGOUT:
 			Logout(msg.FromUid)
 		case READ_ACK:

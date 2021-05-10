@@ -25,7 +25,7 @@ func Register() bool {
 	}
 
 	// 向zk注册
-	req := &zkPB.RegisterRequest{NodeName: static.Name, NodeAddr: static.NodeAddress}
+	req := &zkPB.RegisterRequest{NodeName: static.Name, HttpAddr: static.HttpAddress, GrpcAddr: static.GrpcAddress}
 	res, err := ZKClient.Register(context.Background(), req)
 	if err != nil {
 		logger.Error(err)
@@ -51,7 +51,7 @@ func HeatBeating() {
 	}
 
 	// 创建heartbeat request
-	req := &zkPB.HeartbeatRequest{NodeName: static.Name, NodeAddr: static.NodeAddress}
+	req := &zkPB.HeartbeatRequest{NodeName: static.Name, GrpcAddr: static.GrpcAddress, HttpAddr: static.HttpAddress}
 
 	for {
 		time.Sleep(time.Millisecond * 2000)
@@ -64,7 +64,7 @@ func HeatBeating() {
 			logger.Error(res.Msg)
 			break
 		}
-		logger.Info(res)
+		//logger.Info(res)
 	}
 	conn.Close()
 	// todo 考虑加上心跳重启机制
@@ -131,7 +131,7 @@ func SendMessage(nodeName string, nodeAddr string, msg *nodePB.SendMessageReques
 	nodeClient := nodePB.NewNodeClient(newConn)
 
 	// 创建SendMessage request
-	req := &nodePB.SendMessageRequest{FromNodeName: static.Name, FromNodeAddr: static.NodeAddress, Message: msg}
+	req := &nodePB.SendMessageRequest{FromNodeName: static.Name, FromNodeAddr: static.GrpcAddress, Message: msg}
 
 	res, err := nodeClient.SendMessage(context.Background(), req)
 	if err != nil {
@@ -163,7 +163,7 @@ func FindUser(userId string) (string, string, error) {
 		return "", "", errors.New(res.Msg)
 	}
 
-	return res.NodeName, res.NodeAddr, nil
+	return res.NodeName, res.GrpcAddr, nil
 }
 
 func prepareConn() bool {

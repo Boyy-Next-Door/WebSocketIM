@@ -3,6 +3,7 @@ package main
 import (
 	"WebSocketIM/connection"
 	"WebSocketIM/datasource"
+	"WebSocketIM/fileServer/fileManager"
 	nodeClient "WebSocketIM/grpc/node/client"
 	nodeServer "WebSocketIM/grpc/node/server"
 	Manager "WebSocketIM/grpc/zookeeper/nodeManager"
@@ -10,7 +11,7 @@ import (
 	"WebSocketIM/mq"
 	"WebSocketIM/static"
 	"WebSocketIM/util"
-	ResponseUtil "WebSocketIM/util"
+	Util "WebSocketIM/util"
 	"crypto/md5"
 	"encoding/json"
 	"flag"
@@ -23,6 +24,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -80,24 +82,51 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(h, strconv.FormatInt(crutime, 10))
 		token := fmt.Sprintf("%x", h.Sum(nil))
 
-		t, _ := template.ParseFiles("upload.gtpl")
+		t, _ := template.ParseFiles("html/upload.gtpl")
 		t.Execute(w, token)
 	} else {
-		r.ParseMultipartForm(32 << 20)
+		//r.ParseMultipartForm(32 << 20)
+		r.ParseMultipartForm(fileManager.MaxFileSizeByte)
 		file, handler, err := r.FormFile("uploadfile")
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 		defer file.Close()
-		fmt.Fprintf(w, "%v", handler.Header)
-		f, err := os.OpenFile("./upload/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666) // 此处假设当前目录下已存在upload目录
+		//fmt.Fprintf(w, "%v", handler.Header)
+		// 为文件生成一个唯一id（包含了文件的后缀名）
+		fileId := util.GetUUID() + "_" + handler.Filename
+		f, err := os.OpenFile("fileServer/upload/"+fileId, os.O_WRONLY|os.O_CREATE, 0666) // 此处假设当前目录下已存在upload目录
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 		defer f.Close()
-		io.Copy(f, file)
+		_, err = io.Copy(f, file)
+		if err != nil {
+			Util.InternalError(w, err.Error())
+		} else {
+			// 存储文件成功
+			err = fileManager.SaveFile(fileId)
+			if err != nil {
+				Util.InternalError(w, err.Error())
+			} else {
+				Util.Ok(w, fileId, "upload success")
+			}
+		}
+	}
+}
+
+func downloadHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("method:", r.Method) //获取请求的方法
+	if r.Method == "GET" {
+		crutime := time.Now().Unix()
+		h := md5.New()
+		io.WriteString(h, strconv.FormatInt(crutime, 10))
+		token := fmt.Sprintf("%x", h.Sum(nil))
+
+		t, _ := template.ParseFiles("html/upload.gtpl")
+		t.Execute(w, token)
 	}
 }
 
@@ -140,7 +169,7 @@ func historyHandler(w http.ResponseWriter, r *http.Request) {
 
 // 访问聊天页面接口
 func chatHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("html/im.html")
+	t, _ := template.ParseFiles("html/im_sdk.html")
 	t.Execute(w, nil)
 }
 
@@ -167,11 +196,11 @@ func getNodeHandler(w http.ResponseWriter, r *http.Request) {
 	manager := Manager.GetIns()
 	node, err := manager.GetNode(getNodeReq.UserId)
 	if err != nil {
-		ResponseUtil.InternalError(w, err.Error())
+		Util.InternalError(w, err.Error())
 		return
 	}
 
-	ResponseUtil.Ok(w, node, "get nodeManager success.")
+	Util.Ok(w, node, "get nodeManager success.")
 }
 
 func main() {
@@ -189,28 +218,47 @@ func main() {
 	flag.Parse()
 
 	// 校验参数
-	if mode != "node" && mode != "zookeeper" || name == "undefined" || !util.CheckAddr(httpAddr) || !util.CheckAddr(grpcAddr) || mode == "node" && !util.CheckAddr(zkAddr) {
+	if mode != "node" && mode != "zookeeper" && mode != "filenode" || name == "undefined" || !util.CheckAddr(httpAddr) || mode != "filenode" && !util.CheckAddr(grpcAddr) || mode == "node" && !util.CheckAddr(zkAddr) {
 		logger.Error("参数校验失败")
 		return
 	}
 
 	//根据启动的模式装载server参数
-	if mode == "node" {
-		// node模式
-		static.HttpAddress = httpAddr
-		static.NodeAddress = grpcAddr
-		static.Name = name
-		static.ZooKeeperAddress = zkAddr
-		// 启动服务
-		runNode()
-	} else {
-		// zookeeper模式
-		static.HttpAddress = httpAddr
-		static.Name = name
-		static.ZooKeeperAddress = grpcAddr
+	switch strings.ToLower(mode) {
+	case "node":
+		{
+			// node模式
+			static.HttpAddress = httpAddr
+			static.GrpcAddress = grpcAddr
+			static.Name = name
+			static.ZooKeeperAddress = zkAddr
+			// 启动服务
+			runNode()
+			break
+		}
 
-		// 启动服务
-		runZooKeeper()
+	case "zookeeper":
+		{
+			// zookeeper模式
+			static.HttpAddress = httpAddr
+			static.Name = name
+			static.ZooKeeperAddress = grpcAddr
+			static.GrpcAddress = grpcAddr
+			// 启动服务
+			runZooKeeper()
+			break
+		}
+
+	case "filenode":
+		{
+			// filenode模式
+			static.HttpAddress = httpAddr
+			static.Name = name
+			static.ZooKeeperAddress = zkAddr
+			// 启动服务
+			runFileNode()
+			break
+		}
 	}
 }
 
@@ -233,7 +281,6 @@ func runNode() {
 	// 绑定http服务器路由并开启http服
 	logger.Info("server start on ", static.HttpAddress)
 	http.HandleFunc("/ws", wsHandler)
-	http.HandleFunc("/upload", uploadHandler)
 	http.HandleFunc("/getHistory", historyHandler)
 	err := http.ListenAndServe(static.HttpAddress, nil)
 	if err != nil {
@@ -250,6 +297,17 @@ func runZooKeeper() {
 	logger.Info("server start on ", static.HttpAddress)
 	http.HandleFunc("/chat", chatHandler)
 	http.HandleFunc("/getNode", getNodeHandler)
+	err := http.ListenAndServe(static.HttpAddress, nil)
+	if err != nil {
+		logger.Error(err.Error())
+	}
+}
+
+func runFileNode() {
+	// 绑定http服务器的路由并开启服务
+	logger.Info("server start on ", static.HttpAddress)
+	http.HandleFunc("/upload", uploadHandler)
+	http.Handle("/", http.FileServer(http.Dir("fileServer/upload"))) // 直接将该文件夹中的所有图片作为静态资源返回
 	err := http.ListenAndServe(static.HttpAddress, nil)
 	if err != nil {
 		logger.Error(err.Error())

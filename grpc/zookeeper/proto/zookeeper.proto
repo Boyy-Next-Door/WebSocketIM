@@ -17,7 +17,8 @@ service ZooKeeper {
 // RegisterRequest 请求结构
 message RegisterRequest {
   string nodeName = 1;
-  string nodeAddr = 2;
+  string httpAddr = 2;
+  string grpcAddr = 3;
 }
 
 // RegisterResponse 响应结构
@@ -29,7 +30,8 @@ message RegisterResponse {
 // HeartbeatRequest 请求结构
 message HeartbeatRequest {
   string nodeName = 1;
-  string nodeAddr = 2;
+  string grpcAddr = 2;
+  string httpAddr = 3;
 }
 
 // HeartbeatResponse 响应结构
@@ -63,5 +65,6 @@ message FindUserResponse {
   string code = 1;
   string msg = 2;
   string nodeName = 3;
-  string nodeAddr = 4;
+  string grpcAddr = 4;
+  string httpAddr = 5;
 }
