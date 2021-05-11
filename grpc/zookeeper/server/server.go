@@ -25,8 +25,14 @@ func (zkServer) Register(c context.Context, r *pb.RegisterRequest) (*pb.Register
 	logger.Info("register from ", r.HttpAddr, " --- ", r.NodeName)
 
 	manager := Manager.GetIns()
-	newNode := Manager.Node{NodeName: r.NodeName, GrpcAddr: r.GrpcAddr, HttpAddr: r.HttpAddr}
-	err := manager.AddNode(newNode)
+	newNode := Manager.Node{NodeName: r.NodeName, GrpcAddr: r.GrpcAddr, HttpAddr: r.HttpAddr, NodeType: r.NodeType}
+	var err error
+	if r.NodeType == "node" {
+		err = manager.AddNode(newNode)
+
+	} else if r.NodeType == "filenode" {
+		err = manager.AddFileNode(newNode)
+	}
 
 	var response *pb.RegisterResponse
 	if err != nil {
@@ -47,10 +53,10 @@ func (zkServer) Register(c context.Context, r *pb.RegisterRequest) (*pb.Register
 供node调用的心跳接口
 */
 func (zkServer) Heartbeat(c context.Context, r *pb.HeartbeatRequest) (*pb.HeartbeatResponse, error) {
-	logger.Info("heartbeat from ", r.HttpAddr, " --- ", r.NodeName)
+	logger.Info("heartbeat from ", r.HttpAddr, " --- ", r.NodeName, r.NodeType)
 
 	manager := Manager.GetIns()
-	err := manager.HeartBeat(r.NodeName)
+	err := manager.HeartBeat(r.NodeName, r.NodeType)
 
 	var response *pb.HeartbeatResponse
 	if err != nil {

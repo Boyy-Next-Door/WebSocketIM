@@ -4,7 +4,7 @@ package node;     // 指定默认包名
 // 指定golang包名
 option go_package = "/node";
 
-// 定义服务
+// 定义node服务
 service Node {
   // 用户挤下线
   rpc ForceLogout(ForceLogoutRequest) returns (ForceLogoutResponse) {}

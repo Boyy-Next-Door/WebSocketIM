@@ -200,7 +200,17 @@ func getNodeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Util.Ok(w, node, "get nodeManager success.")
+	Util.Ok(w, node, "get node success.")
+}
+
+func getFileNodeHandler(w http.ResponseWriter, r *http.Request) {
+	manager := Manager.GetIns()
+	node, err := manager.GetFileNode()
+	if err != nil {
+		Util.InternalError(w, err.Error())
+		return
+	}
+	Util.Ok(w, node, "get filenode success.")
 }
 
 func main() {
@@ -228,6 +238,7 @@ func main() {
 	case "node":
 		{
 			// node模式
+			static.Mode = "node"
 			static.HttpAddress = httpAddr
 			static.GrpcAddress = grpcAddr
 			static.Name = name
@@ -240,6 +251,7 @@ func main() {
 	case "zookeeper":
 		{
 			// zookeeper模式
+			static.Mode = "zookeeper"
 			static.HttpAddress = httpAddr
 			static.Name = name
 			static.ZooKeeperAddress = grpcAddr
@@ -252,6 +264,7 @@ func main() {
 	case "filenode":
 		{
 			// filenode模式
+			static.Mode = "filenode"
 			static.HttpAddress = httpAddr
 			static.Name = name
 			static.ZooKeeperAddress = zkAddr
@@ -297,6 +310,7 @@ func runZooKeeper() {
 	logger.Info("server start on ", static.HttpAddress)
 	http.HandleFunc("/chat", chatHandler)
 	http.HandleFunc("/getNode", getNodeHandler)
+	http.HandleFunc("/getFileNode", getFileNodeHandler)
 	err := http.ListenAndServe(static.HttpAddress, nil)
 	if err != nil {
 		logger.Error(err.Error())
@@ -304,6 +318,15 @@ func runZooKeeper() {
 }
 
 func runFileNode() {
+	// 初始化文件管理中心
+	fileManager.Init()
+	// 注册
+	success := nodeClient.Register()
+	if !success {
+		logger.Error("注册失败")
+		return
+	}
+
 	// 绑定http服务器的路由并开启服务
 	logger.Info("server start on ", static.HttpAddress)
 	http.HandleFunc("/upload", uploadHandler)

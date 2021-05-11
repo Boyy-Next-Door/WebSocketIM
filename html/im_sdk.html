@@ -24,67 +24,6 @@
 
         return ret;
     }
-
-    function ajax(options){
-        options = options ||{};  //调用函数时如果options没有指定，就给它赋值{},一个空的Object
-        options.type=(options.type || "GET").toUpperCase();/// 请求格式GET、POST，默认为GET
-        options.dataType=options.dataType || "json";    //响应数据格式，默认json
-
-        var params=formatParams(options.data);//options.data请求的数据
-
-        var xhr;
-        //考虑兼容性
-        if(window.XMLHttpRequest){
-            xhr=new XMLHttpRequest();
-        }else if(window.ActiveObject){//兼容IE6以下版本
-            xhr=new ActiveXobject('Microsoft.XMLHTTP');
-        }
-
-        //启动并发送一个请求
-        if(options.type=="GET"){
-            xhr.open("GET",options.url+"?"+params,true);
-            xhr.send(null);
-        }else if(options.type=="POST"){
-            xhr.open("post",options.url,true);
-
-            //设置表单提交时的内容类型
-            //Content-type数据请求的格式
-            xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-            xhr.send(params);
-        }
-
-        //    设置有效时间
-        setTimeout(function(){
-            if(xhr.readySate!=4){
-                xhr.abort();
-            }
-        },options.timeout)
-
-        //    接收
-        //     options.success成功之后的回调函数  options.error失败后的回调函数    //xhr.responseText,xhr.responseXML  获得字符串形式的响应数据或者XML形式的响应数据
-        xhr.onreadystatechange=function(){
-            if(xhr.readyState==4){
-                var status=xhr.status;
-                if(status>=200&& status<300 || status==304){
-                    options.success&&options.success(xhr.responseText,xhr.responseXML);
-                }else{
-                    options.error&&options.error(status);
-                }
-            }
-        }
-    }
-
-    //格式化请求参数
-    function formatParams(data){
-        var arr=[];
-        for(var name in data){
-            arr.push(encodeURIComponent(name)+"="+encodeURIComponent(data[name]));
-        }
-        arr.push(("v="+Math.random()).replace(".",""));
-        return arr.join("&");
-
-    }
-
 </script>
 <script type="text/javascript">
     var zkUri = "127.0.0.1:7777"
@@ -105,7 +44,7 @@
                     alert('调用失败！');
                 },
                 success : function(result) {
-                    alert("success" + result)
+                    alert(JSON.stringify(result))
                     if (result.code !== 200)  {
                         nodeInfo =  null
                     } else {
@@ -116,25 +55,62 @@
         return nodeInfo
     }
 
+    function getFileNode() {
+        let nodeInfo
+        //这个var是获取的id问s1的select选择的opention值
+        $.ajax({
+            type : "post",
+            url : "getFileNode",
+            async : false,
+            // contentType: "application/json",
+            // data:JSON.stringify({userId:"123123", requestId:genId("req_",4)}),
+            //data:中的是传递到后台的数据，这里数据格式为json格式
+            dataType : "json",
+            error : function() {
+                //alert(checkValue);
+                alert('调用失败！');
+            },
+            success : function(result) {
+                alert(JSON.stringify(result))
+                if (result.code !== 200)  {
+                    nodeInfo =  null
+                } else {
+                    nodeInfo = result.data
+                }
+            }
+        })
+        return nodeInfo
+    }
+
 </script>
 <script type="text/javascript">
     // var wsUri = "ws://159.75.5.163:80/ws";
     var wsUri = "";
     var output;
+    var mode = "cluster"
 
     function init() {
         output = document.getElementById("output");
+        // 单点部署
+        if(mode === "single") {
+            wsUri = "ws://127.0.0.1:7777/ws";
+        } else if(mode === "cluster") {
+            // 集群版本
+            let node = getNode();
+            let fileNode = getFileNode();
+            if (!node) {
+                alert("当前没有可用服务节点");
+                return;
+            }
+            if(!fileNode) {
+                alert("当前没有可用文件服务节点");
+            }
+            wsUri = "ws://" + node.httpAddr + "/ws";
+        }
         connectToNode();
     }
 
     function connectToNode() {
-        let node = getNode()
-        if (!node) {
-            alert("当前没有可用服务节点")
-            return
-        }
-        wsUri = "ws://" + node.httpAddr + "/ws";
-
         websocket = new WebSocket(wsUri);
         websocket.onopen = function (evt) {
             onOpen(evt)
@@ -152,7 +128,6 @@
 
     function onOpen(evt) {
         writeToScreen("CONNECTED");
-        // doSend("WebSocket rocks");
     }
 
     function onClose(evt) {

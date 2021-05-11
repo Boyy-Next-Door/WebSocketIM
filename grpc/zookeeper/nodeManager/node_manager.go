@@ -24,6 +24,7 @@ type Node struct {
 	NodeName     string     `json:"nodeName,omitempty"`
 	GrpcAddr     string     `json:"grpcAddr,omitempty"`
 	HttpAddr     string     `json:"httpAddr,omitempty"`
+	NodeType     string     `json:"nodeType,omitempty"`
 	LastHeatBeat int64      `json:"-"` // 上一次心跳时间戳
 	Status       int        `json:"-"` // 节点状态  1-正常 0-死亡
 	UserSet      mapset.Set `json:"-"` // 当前登录用户set
@@ -34,6 +35,8 @@ type Manager struct {
 	NodeMap map[string]Node
 	// 用来记录node注册顺序的slice
 	NodeSlice []string
+	// 维护filenode
+	FileNode Node
 }
 
 // 全局单例
@@ -83,31 +86,67 @@ func (manager *Manager) AddNode(node Node) error {
 }
 
 /**
+添加一个文件服务器
+*/
+func (manager *Manager) AddFileNode(node Node) error {
+	node.LastHeatBeat = time.Now().Unix()
+	node.Status = 1
+	manager.FileNode = node
+	return nil
+}
+
+/**
 接受节点心跳
 */
-func (manager *Manager) HeartBeat(nodeName string) error {
-	val, exist := manager.NodeMap[nodeName]
-	if exist {
-		if val.Status == 1 || val.Status == 0 && time.Now().Unix()-val.LastHeatBeat < RecoverTime {
-			val.Status = 1
-			val.LastHeatBeat = time.Now().Unix()
-			manager.NodeMap[nodeName] = val
-			return nil
-		} else {
-			// 节点已经死亡且超过了复活时间 删除中之
-			delete(manager.NodeMap, nodeName)
-			for i := 0; i < len(manager.NodeSlice); i++ {
-				if manager.NodeSlice[i] == nodeName {
-					manager.NodeSlice = append(manager.NodeSlice[:i], manager.NodeSlice[i+1:]...)
-					break
+func (manager *Manager) HeartBeat(nodeName string, nodeType string) error {
+	switch nodeType {
+	case "node":
+		{
+			val, exist := manager.NodeMap[nodeName]
+			if exist {
+				if val.Status == 1 || val.Status == 0 && time.Now().Unix()-val.LastHeatBeat < RecoverTime {
+					val.Status = 1
+					val.LastHeatBeat = time.Now().Unix()
+					manager.NodeMap[nodeName] = val
+					return nil
+				} else {
+					// 节点已经死亡且超过了复活时间 删除之
+					delete(manager.NodeMap, nodeName)
+					for i := 0; i < len(manager.NodeSlice); i++ {
+						if manager.NodeSlice[i] == nodeName {
+							manager.NodeSlice = append(manager.NodeSlice[:i], manager.NodeSlice[i+1:]...)
+							break
+						}
+					}
+					return errors.New("该节点已经死亡，请重新注册")
+				}
+			} else {
+				// 节点不存在
+				return errors.New("该节点不存在，请注册")
+			}
+			break
+		}
+	case "filenode":
+		{
+			val := manager.FileNode
+			if val == (Node{}) || val.NodeName != nodeName {
+				// 节点不存在
+				return errors.New("该节点不存在，请注册")
+			} else {
+				if val.Status == 1 || val.Status == 0 && time.Now().Unix()-val.LastHeatBeat < RecoverTime {
+					val.Status = 1
+					val.LastHeatBeat = time.Now().Unix()
+					manager.FileNode = val
+					return nil
+				} else {
+					// 节点已经死亡且超过了复活时间 删除之
+					manager.FileNode = Node{}
+					return errors.New("该节点已经死亡，请重新注册")
 				}
 			}
-			return errors.New("该节点已经死亡，请重新注册")
 		}
-	} else {
-		// 节点不存在
-		return errors.New("该节点不存在，请注册")
 	}
+	return nil
 }
 
 /**
@@ -120,7 +159,7 @@ func (manager *Manager) MonitorNodes() {
 		fmt.Println(time.Now().Format("2006-01-02 15:04:05"), " --- MonitorNodes new tick.")
 		// 检查nodeMap中死亡的节点
 		//遍历map
-		logger.Info("------ checking nodeManager status ------")
+		logger.Info("\n------ checking node status ------")
 		for key, val := range manager.NodeMap {
 			logger.Info(key, val)
 			dif := time.Now().Unix() - val.LastHeatBeat
@@ -139,7 +178,22 @@ func (manager *Manager) MonitorNodes() {
 				}
 			}
 		}
-		logger.Info("------ check finished ------")
+		logger.Info("------ check filenode status ------")
+		// 检查filenode
+		val := manager.FileNode
+		if val != (Node{}) {
+			logger.Info(val)
+			dif := time.Now().Unix() - val.LastHeatBeat
+			if dif > HeartBeatInterval {
+				if dif < RecoverTime {
+					val.Status = 0
+				} else {
+					// 节点死亡
+					manager.FileNode = Node{}
+				}
+			}
+		}
+		logger.Info("------ check finished ------\n")
 	}
 }
 
@@ -193,6 +247,17 @@ func (manager *Manager) GetNode(userId string) (Node, error) {
 	} else {
 		// 2. 有空闲节点, bestIdleIdx不为"", 此情况下分配给bestIdleIdx这个节点, 尽可能早地使其满载
 		return manager.NodeMap[bestIdleNode], nil
+	}
+}
+
+/**
+供sdk使用 请求分配一个文件服务节点
+*/
+func (manager *Manager) GetFileNode() (Node, error) {
+	if manager.FileNode == (Node{}) {
+		return Node{}, errors.New("没有可用文件服务器节点")
+	} else {
+		return manager.FileNode, nil
 	}
 }
 

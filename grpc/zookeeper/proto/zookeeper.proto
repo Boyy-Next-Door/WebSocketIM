@@ -4,7 +4,7 @@ package zookeeper;     // 指定默认包名
 // 指定golang包名
 option go_package = "/zookeeper";
 
-// 定义服务
+// 定义zookeeper服务
 service ZooKeeper {
   // 定义SayHello方法
   rpc Register(RegisterRequest) returns (RegisterResponse) {}
@@ -19,6 +19,7 @@ message RegisterRequest {
   string nodeName = 1;
   string httpAddr = 2;
   string grpcAddr = 3;
+  string nodeType = 4;
 }
 
 // RegisterResponse 响应结构
@@ -32,6 +33,7 @@ message HeartbeatRequest {
   string nodeName = 1;
   string grpcAddr = 2;
   string httpAddr = 3;
+  string nodeType = 4;
 }
 
 // HeartbeatResponse 响应结构

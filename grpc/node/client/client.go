@@ -25,7 +25,7 @@ func Register() bool {
 	}
 
 	// 向zk注册
-	req := &zkPB.RegisterRequest{NodeName: static.Name, HttpAddr: static.HttpAddress, GrpcAddr: static.GrpcAddress}
+	req := &zkPB.RegisterRequest{NodeName: static.Name, HttpAddr: static.HttpAddress, GrpcAddr: static.GrpcAddress, NodeType: static.Mode}
 	res, err := ZKClient.Register(context.Background(), req)
 	if err != nil {
 		logger.Error(err)
@@ -51,7 +51,7 @@ func HeatBeating() {
 	}
 
 	// 创建heartbeat request
-	req := &zkPB.HeartbeatRequest{NodeName: static.Name, GrpcAddr: static.GrpcAddress, HttpAddr: static.HttpAddress}
+	req := &zkPB.HeartbeatRequest{NodeName: static.Name, GrpcAddr: static.GrpcAddress, HttpAddr: static.HttpAddress, NodeType: static.Mode}
 
 	for {
 		time.Sleep(time.Millisecond * 2000)
