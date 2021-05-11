@@ -12,6 +12,8 @@ type Response struct {
 }
 
 func Ok(w http.ResponseWriter, data interface{}, msg string) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
 	marshal, _ := json.Marshal(Response{msg, data, 200})
@@ -19,6 +21,8 @@ func Ok(w http.ResponseWriter, data interface{}, msg string) {
 }
 
 func ParamError(w http.ResponseWriter, err string) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
 	marshal, _ := json.Marshal(Response{"parameter error : " + err, nil, 400})
@@ -26,6 +30,8 @@ func ParamError(w http.ResponseWriter, err string) {
 }
 
 func InternalError(w http.ResponseWriter, err string) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
 	marshal, _ := json.Marshal(Response{"internal error : " + err, nil, 500})

@@ -31,7 +31,7 @@ func myHandler(data interface{}) {
 			//并且在expire前得到了ack
 			if exist {
 				// 按照已读消息入库
-				_, err := datasource.Insert(datasource.InsertMessageRead, message.MsgId, message.MsgType, message.Data, message.FromUid, message.ToUid, message.CreateAt, readAt)
+				_, err := datasource.Insert(datasource.InsertMessageRead, message.MsgId, message.MsgType, message.ContentType, message.Data, message.FromUid, message.ToUid, message.CreateAt, readAt)
 				if err != nil {
 					logger.Error("message %+v insert failed at %s.", message.MsgId, time.Now().Format("2006/01/02 15:04:05"))
 				}
@@ -39,7 +39,7 @@ func myHandler(data interface{}) {
 				delete(ackMap, message.MsgId)
 			} else {
 				// 没有得到ack 按照未读消息入库
-				_, err := datasource.Insert(datasource.InsertMessage, message.MsgId, message.MsgType, message.Data, message.FromUid, message.ToUid, message.CreateAt)
+				_, err := datasource.Insert(datasource.InsertMessage, message.MsgId, message.MsgType, message.ContentType, message.Data, message.FromUid, message.ToUid, message.CreateAt)
 				if err != nil {
 					logger.Error("message %+v insert failed at %s.", message.MsgId, time.Now().Format("2006/01/02 15:04:05"))
 					return
@@ -110,7 +110,7 @@ func workLoop() {
 						}
 					}
 					//目标用户不在线 直接入库 如果数据库写入压力太大 可以做一个缓冲队列 定时批量写入
-					_, err = datasource.Insert(datasource.InsertMessage, msg.MsgId, msg.MsgType, msg.Data, msg.FromUid, msg.ToUid, msg.CreateAt)
+					_, err = datasource.Insert(datasource.InsertMessage, msg.MsgId, msg.MsgType, msg.ContentType, msg.Data, msg.FromUid, msg.ToUid, msg.CreateAt)
 					if err != nil {
 						logger.Error("message %+v insert failed at %s.", msg.MsgId, time.Now().Format("2006/01/02 15:04:05"))
 					}

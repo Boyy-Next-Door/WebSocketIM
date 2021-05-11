@@ -18,8 +18,8 @@ const (
 //该数据源会在Init.go中得到初始化
 var DataSource *sqlx.DB
 
-const InsertMessageRead = "INSERT INTO tb_message(msgId,msgType,data,fromUid,toUid,createAt,isRead,readAt) VALUES (?,?,?,?,?,?,1,?)"
-const InsertMessage = "INSERT INTO tb_message(msgId,msgType,data,fromUid,toUid,createAt,isRead) VALUES (?,?,?,?,?,?,0)"
+const InsertMessageRead = "INSERT INTO tb_message(msgId,msgType,contentType,data,fromUid,toUid,createAt,isRead,readAt) VALUES (?,?,?,?,?,?,?,1,?)"
+const InsertMessage = "INSERT INTO tb_message(msgId,msgType,contentType,data,fromUid,toUid,createAt,isRead) VALUES (?,?,?,?,?,?,?,0)"
 const UpdateMessageStatusToRevoke = "UPDATE tb_message SET isRevoke=1, revokeAt=? WHERE msgId=?"
 const UpdateMessageStatusToRead = "UPDATE tb_message SET isRead=1, readAt=? WHERE msgId=?"
 const SelectHistory = "select * from " +

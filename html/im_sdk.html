@@ -4,7 +4,6 @@
     <title>go websocket</title>
     <meta charset="utf-8"/>
 </head>
-<body>
 <script type="text/javascript" src="http://cdn.staticfile.org/moment.js/2.24.0/moment.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script type="text/javascript">
@@ -88,7 +87,7 @@
     var wsUri = "";
     var output;
     var mode = "cluster"
-
+    var filenodeUri = "";
     function init() {
         output = document.getElementById("output");
         // 单点部署
@@ -106,6 +105,7 @@
                 alert("当前没有可用文件服务节点");
             }
             wsUri = "ws://" + node.httpAddr + "/ws";
+            filenodeUri = "http://"+fileNode.httpAddr;
         }
         connectToNode();
     }
@@ -135,31 +135,37 @@
     }
 
     function onMessage(evt) {
-            var obj = JSON.parse(evt.data);
-            switch(obj.msgType){
+            var msgObj = JSON.parse(evt.data);
+            switch(msgObj.msgType){
                 case 1:{
                     //message SEND
-                    writeToScreen('<span style="color: cornflowerblue" id="'+obj.msgId+'">'+obj.fromUid+' '+obj.createAt+'<br>'+obj.data+'</span>')
+                    if(msgObj.contentType === 1) {
+                        writeToScreen('<span style="color: cornflowerblue" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt+'<br>'+'<a  href="'+filenodeUri+'/' +msgObj.data+'" target="_BLANK">[图片]</a>'+'</span>')
+                    } else if (msgObj.contentType === 2){
+                        writeToScreen('<span style="color: cornflowerblue" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt+'<br>'+'<a  href="'+filenodeUri+'/' +msgObj.data+'" target="_BLANK">[文件]</a>'+'</span>')
+                    } else {
+                        writeToScreen('<span style="color: cornflowerblue" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt+'<br>'+msgObj.data+'</span>')
+                    }
                     //回写ACK
-                    senACK(obj.msgId,obj.toUid,obj.fromUid)
+                    senACK(msgObj.msgId,msgObj.toUid,msgObj.fromUid)
                     break;
                 }
                 case 2:{
                     //REVOKE
-                    var msgEle = document.getElementById(obj.msgId);
+                    var msgEle = document.getElementById(msgObj.msgId);
                     msgEle.innerHTML="对方撤回了一条消息"
                     break;
                 }
                 case 3:{
                     //LOGIN response
-                    var msgEle = document.getElementById(obj.msgId);
-                    msgEle.innerHTML=obj.data
+                    var msgEle = document.getElementById(msgObj.msgId);
+                    msgEle.innerHTML=msgObj.data
                     msgEle.style.color="lawngreen"
                     break;
                 }
                 case 5:{
                     //READ_ACK
-                    var msgEle = document.getElementById(obj.msgId);
+                    var msgEle = document.getElementById(msgObj.msgId);
                     var elementsByTagName = msgEle.getElementsByTagName('span');
                     elementsByTagName[0].innerHTML='已读';
                     elementsByTagName[0].style.color="lawngreen";
@@ -167,7 +173,7 @@
                 }
                 case 6:{
                     //message SENT
-                    var msgEle = document.getElementById(obj.msgId);
+                    var msgEle = document.getElementById(msgObj.msgId);
                     var elementsByTagName = msgEle.getElementsByTagName('span');
                     elementsByTagName[0].innerHTML='已发送';
                     elementsByTagName[0].style.color="cornflowerblue";
@@ -175,13 +181,13 @@
                 }
                 case 7:{
                     //REVOKE ACK
-                    var msgEle = document.getElementById(obj.msgId);
+                    var msgEle = document.getElementById(msgObj.msgId);
                     msgEle.innerHTML="你撤回了一条消息";
                     break;
                 }
                 case 8:{
                     // ERROR
-                    var msgEle = document.getElementById(obj.msgId);
+                    var msgEle = document.getElementById(msgObj.msgId);
                     msgEle.innerHTML=obj.data;
                     msgEle.style.color="red";
                     break;
@@ -195,19 +201,26 @@
         writeToScreen('<span style="color: #ff0000;">ERROR:</span> ' + evt.data);
     }
 
-    function doSend(messageType,message,fromUid,toUid) {
+    function doSend(messageType, contentType, message, fromUid, toUid) {
         var msgObj= {
             msgId:RndNum(16),
             msgType:messageType,
             data:message,
             fromUid:fromUid,
             toUid:toUid,
-            createAt:new Date()
+            createAt:new Date(),
+            contentType:contentType
         };
 
 		var json = JSON.stringify(msgObj)
-        writeToScreen('<span style="color: dimgrey" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt.Format('yyyy-MM-dd hh:mm:ss')+'&nbsp;<span style="color: slategray">发送中</span>&nbsp;<a  href="javascript:doRevoke(\''+msgObj.msgId+'\',\''+fromUid+'\',\''+toUid+'\')">🔙</a><br>'+msgObj.data+'</span>')
         websocket.send(json);
+        if(contentType === 1) {
+            writeToScreen('<span style="color: dimgrey" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt.Format('yyyy-MM-dd hh:mm:ss')+'&nbsp;<span style="color: slategray">发送中</span>&nbsp;<a  href="javascript:doRevoke(\''+msgObj.msgId+'\',\''+fromUid+'\',\''+toUid+'\')">🔙</a><br>'+'<a  href="'+filenodeUri+'/' +msgObj.data+'" target="_BLANK">[图片]</a>'+'</span>')
+        } else if (contentType === 2){
+            writeToScreen('<span style="color: dimgrey" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt.Format('yyyy-MM-dd hh:mm:ss')+'&nbsp;<span style="color: slategray">发送中</span>&nbsp;<a  href="javascript:doRevoke(\''+msgObj.msgId+'\',\''+fromUid+'\',\''+toUid+'\')">🔙</a><br>'+'<a  href="'+filenodeUri+'/' +msgObj.data+'" target="_BLANK">[文件]</a>'+'</span>')
+        } else {
+            writeToScreen('<span style="color: dimgrey" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt.Format('yyyy-MM-dd hh:mm:ss')+'&nbsp;<span style="color: slategray">发送中</span>&nbsp;<a  href="javascript:doRevoke(\''+msgObj.msgId+'\',\''+fromUid+'\',\''+toUid+'\')">🔙</a><br>'+msgObj.data+'</span>')
+        }
     }
 
     function doRevoke(msgId,fromUid,toUid){
@@ -244,13 +257,68 @@
         output.appendChild(pre);
     }
 
-    window.addEventListener("load", init, false);
+
+    function sendFile() {
+        var data = document.getElementById("input").value;
+        var userId = document.getElementById("userId").value;
+        var toUid = document.getElementById("toUid").value;
+
+        let fileNode = getFileNode();
+        if(!fileNode) {
+            alert("当前没有可用文件服务节点");
+            return
+        }
+
+        // 通过ajax上传文件
+        let uploadSuccess = false;
+        let fileId = "";
+        var formData = new FormData();
+        var fileName = $("#uploadfile").val();
+        if(!fileName) {
+            return
+        }
+        formData.append("uploadfile",$("#uploadfile")[0].files[0]);
+        $.ajax({
+            url : filenodeUri + "/upload",
+            type : 'POST',
+            data : formData,
+            async: false,
+            // 告诉jQuery不要去处理发送的数据
+            processData : false,
+            // 告诉jQuery不要去设置Content-Type请求头
+            contentType : false,
+            dataType : "json",
+            beforeSend:function(){
+                console.log("正在进行，请稍候");
+            },
+            success : function(result) {
+                if (result.code !== 200)  {
+                    uploadSuccess = false;
+                } else {
+                    uploadSuccess = true;
+                    fileId = result.data;
+                }
+            },
+            error : function(responseStr) {
+                console.log("error");
+            }
+        });
+
+        // 文件上传成功 则发送消息
+        if(uploadSuccess) {
+            if(isAssetTypeAnImage(fileName)) {
+                doSend(1, 1, fileId, userId, toUid);
+            } else {
+                doSend(1, 2, fileId, userId, toUid);
+            }
+        }
+    }
 
     function sendBtnClick() {
         var msg = document.getElementById("input").value;
         var userId = document.getElementById("userId").value;
         var toUid = document.getElementById("toUid").value;
-        doSend(1,msg,userId,toUid);
+        doSend(1, 0, msg,userId,toUid);
         document.getElementById("input").value = '';
         document.getElementById('input').focus()
     }
@@ -288,7 +356,7 @@
 
     function login(){
         var userId = document.getElementById("userId").value;
-        doSend(3,"login request",userId,"server");
+        doSend(3, 0 ,"login request",userId,"server");
     }
 
     Date.prototype.Format = function (fmt) { // author: meizz
@@ -317,7 +385,19 @@
         return rnd;
     }
 
+    // 判断文件是否为图片格式
+    function isAssetTypeAnImage(filePath) {
+        //获取最后一个.的位置
+        var index= filePath.lastIndexOf(".");
+        //获取后缀
+        var ext = filePath.substr(index+1);
+        //判断是否是图片
+        return [
+            'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'].
+        indexOf(ext.toLowerCase()) !== -1;
+    }
 
+    window.addEventListener("load", init, false);
 </script>
 <h2>WebSocket Test</h2>
 <div id="online-list">
@@ -330,7 +410,10 @@
 
 <input type="text" id="input"></input>
 <button onclick="sendBtnClick()">send</button>
-<button onclick="closeBtnClick()">close</button>
+<button onclick="closeBtnClick()">close</button><br>
+<input type="file" id="uploadfile"></input><br>
+<button onclick="sendFile()">发送文件</button>
+
 <div id="output">
 
 
