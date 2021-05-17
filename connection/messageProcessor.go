@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/gorilla/websocket"
+	"github.com/wonderivan/logger"
 	"log"
 	"sync"
 )
@@ -64,6 +65,8 @@ func (conn *Connection) ReadMessage() (msg static.Message, err error) {
 	case msg = <-conn.inChan:
 	case <-conn.closeChan:
 		err = errors.New("connection is closed")
+		// 这里需要从用户列表中删除该连接 否则会导致后续的消息无法正确收发
+		RemoveConn(conn.ConnId)
 	}
 	return
 }
@@ -74,6 +77,7 @@ func (conn *Connection) WriteMessage(msg static.Message) (err error) {
 	case conn.outChan <- msg:
 	case <-conn.closeChan:
 		err = errors.New("connection is closed")
+		RemoveConn(conn.ConnId)
 	}
 	return
 }
@@ -87,6 +91,7 @@ func (conn *Connection) Close() {
 		close(conn.closeChan)
 		conn.isClosed = true
 	}
+	RemoveConn(conn.ConnId)
 	conn.mutex.Unlock()
 }
 
@@ -150,6 +155,7 @@ func (conn *Connection) processLoop() {
 			break
 		}
 		//log.Println("接收到消息", (string)(msg.Data))
+		logger.Info(msg)
 		//处理消息
 		switch msg.MsgType {
 		case SEND:

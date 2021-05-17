@@ -25,8 +25,9 @@
     }
 </script>
 <script type="text/javascript">
-    var zkUri = "127.0.0.1:7777"
-
+    var zkUri = "127.0.0.1:7777";
+    var start =  0;
+    var end = 0;
     function getNode() {
         let nodeInfo
         //这个var是获取的id问s1的select选择的opention值
@@ -70,7 +71,7 @@
                 alert('调用失败！');
             },
             success : function(result) {
-                alert(JSON.stringify(result))
+                // alert(JSON.stringify(result))
                 if (result.code !== 200)  {
                     nodeInfo =  null
                 } else {
@@ -139,15 +140,17 @@
             switch(msgObj.msgType){
                 case 1:{
                     //message SEND
+                    alert("message send at: " + Date.now());
+
                     if(msgObj.contentType === 1) {
-                        writeToScreen('<span style="color: cornflowerblue" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt+'<br>'+'<a  href="'+filenodeUri+'/' +msgObj.data+'" target="_BLANK">[图片]</a>'+'</span>')
+                        writeToScreen('<span style="color: cornflowerblue" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt+'<br>'+'<a  href="'+filenodeUri+'/' +msgObj.data+'" target="_BLANK">[图片]</a>'+'</span>');
                     } else if (msgObj.contentType === 2){
-                        writeToScreen('<span style="color: cornflowerblue" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt+'<br>'+'<a  href="'+filenodeUri+'/' +msgObj.data+'" target="_BLANK">[文件]</a>'+'</span>')
+                        writeToScreen('<span style="color: cornflowerblue" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt+'<br>'+'<a  href="'+filenodeUri+'/' +msgObj.data+'" target="_BLANK">[文件]</a>'+'</span>');
                     } else {
-                        writeToScreen('<span style="color: cornflowerblue" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt+'<br>'+msgObj.data+'</span>')
+                        writeToScreen('<span style="color: cornflowerblue" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt+'<br>'+msgObj.data+'</span>');
                     }
                     //回写ACK
-                    senACK(msgObj.msgId,msgObj.toUid,msgObj.fromUid)
+                    senACK(msgObj.msgId,msgObj.toUid,msgObj.fromUid);
                     break;
                 }
                 case 2:{
@@ -164,6 +167,8 @@
                     break;
                 }
                 case 5:{
+                    // end = new Date().getTime()
+                    // alert('发送消息耗时' + (end-start))
                     //READ_ACK
                     var msgEle = document.getElementById(msgObj.msgId);
                     var elementsByTagName = msgEle.getElementsByTagName('span');
@@ -213,6 +218,9 @@
         };
 
 		var json = JSON.stringify(msgObj)
+        // start = new Date().getTime();
+        alert("message send at: " + Date.now());
+
         websocket.send(json);
         if(contentType === 1) {
             writeToScreen('<span style="color: dimgrey" id="'+msgObj.msgId+'">'+msgObj.fromUid+' '+msgObj.createAt.Format('yyyy-MM-dd hh:mm:ss')+'&nbsp;<span style="color: slategray">发送中</span>&nbsp;<a  href="javascript:doRevoke(\''+msgObj.msgId+'\',\''+fromUid+'\',\''+toUid+'\')">🔙</a><br>'+'<a  href="'+filenodeUri+'/' +msgObj.data+'" target="_BLANK">[图片]</a>'+'</span>')

@@ -92,7 +92,7 @@ func ConvertMessage(msg *pb.SendMessageRequest_Message) static.Message {
 	retMsg.ReadAt = time.Unix(msg.ReadAt, 0)
 	retMsg.IsRevoke = int(msg.IsRevoke)
 	retMsg.RevokeAt = time.Unix(msg.RevokeAt, 0)
-
+	retMsg.ContentType = int(msg.ContentType)
 	return retMsg
 }
 

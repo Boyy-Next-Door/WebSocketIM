@@ -38,6 +38,7 @@ message SendMessageRequest {
       int64 ReadAt = 8;
       int32 IsRevoke = 9;
       int64 RevokeAt = 10;
+      int32 ContentType = 11;
   }
 
   string fromNodeName = 1;

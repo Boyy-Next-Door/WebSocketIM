@@ -251,6 +251,14 @@ func (manager *Manager) GetNode(userId string) (Node, error) {
 }
 
 /**
+随即返回一个服务器节点
+*/
+func (manager *Manager) RandGetNode(userId string) (Node, error) {
+	randIdx := rand.Intn(len(manager.NodeMap))
+	return manager.NodeMap[manager.NodeSlice[randIdx]], nil
+}
+
+/**
 供sdk使用 请求分配一个文件服务节点
 */
 func (manager *Manager) GetFileNode() (Node, error) {

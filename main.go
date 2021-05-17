@@ -43,6 +43,8 @@ var (
 )
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
+	logger.Info(r.RemoteAddr + " establishing WebSocket connection...")
+
 	//	w.Write([]byte("hello"))
 	var (
 		wsConn *websocket.Conn
@@ -194,7 +196,9 @@ func getNodeHandler(w http.ResponseWriter, r *http.Request) {
 	// 目前支持挤下线 账号已登录不影响新的登录请求
 	// 经过负载均衡策略  将新的登录请求分配到某一个Node
 	manager := Manager.GetIns()
-	node, err := manager.GetNode(getNodeReq.UserId)
+	//node, err := manager.GetNode(getNodeReq.UserId)
+	node, err := manager.RandGetNode(getNodeReq.UserId)
+
 	if err != nil {
 		Util.InternalError(w, err.Error())
 		return

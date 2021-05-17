@@ -22,14 +22,19 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="68998375-b54e-4083-8562-f49b9246f9a8" name="Default Changelist" comment="feat:完善SDK">
+    <list default="true" id="68998375-b54e-4083-8562-f49b9246f9a8" name="Default Changelist" comment="feat:完善SDK2.0&#10;feat:完成了文件的收发">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/connection/comsumer.go" beforeDir="false" afterPath="$PROJECT_DIR$/connection/comsumer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/datasource/datasource.go" beforeDir="false" afterPath="$PROJECT_DIR$/datasource/datasource.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/connection/messageProcessor.go" beforeDir="false" afterPath="$PROJECT_DIR$/connection/messageProcessor.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/fileServer/fileManager/fileRecord.txt" beforeDir="false" afterPath="$PROJECT_DIR$/fileServer/fileManager/fileRecord.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/node/proto/node.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/proto/node.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/node/proto/node.proto" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/proto/node.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/node/proto/node_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/proto/node_grpc.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/node/server/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/node/server/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc/zookeeper/nodeManager/node_manager.go" beforeDir="false" afterPath="$PROJECT_DIR$/grpc/zookeeper/nodeManager/node_manager.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/html/im - node2.html" beforeDir="false" afterPath="$PROJECT_DIR$/html/im - node2.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/html/im_sdk.html" beforeDir="false" afterPath="$PROJECT_DIR$/html/im_sdk.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/staticVar.go" beforeDir="false" afterPath="$PROJECT_DIR$/static/staticVar.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/ResponseUtil.go" beforeDir="false" afterPath="$PROJECT_DIR$/util/ResponseUtil.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,7 +118,7 @@
     <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="WebSocketIM" />
       <working_directory value="$PROJECT_DIR$" />
-      <parameters value="-m filenode -n node_02 -h 127.0.0.1:9999 -z 127.0.0.1:50050" />
+      <parameters value="-m node -n node_01 -h 127.0.0.1:8000 -g 127.0.0.1:50051 -z 127.0.0.1:50050" />
       <kind value="FILE" />
       <filePath value="$PROJECT_DIR$/main.go" />
       <package value="WebSocketIM" />
@@ -175,7 +180,8 @@
     <MESSAGE value="完成了cluster_mode的全部修改，单节点聊天测试成功，还需要测试跨服聊天" />
     <MESSAGE value="fix：修复了node相关接口返回的字段，区分了grpcAddr和httpAddr。&#10;feat:完善了文件服务器节点" />
     <MESSAGE value="feat:完善SDK" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat:完善SDK" />
+    <MESSAGE value="feat:完善SDK2.0&#10;feat:完成了文件的收发" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat:完善SDK2.0&#10;feat:完成了文件的收发" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -193,15 +199,34 @@
           <line>169</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/main.go</url>
+          <line>48</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/main.go</url>
+          <line>138</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/connection/messageProcessor.go</url>
+          <line>166</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
           <url>file://$PROJECT_DIR$/connection/messageProcessor.go</url>
           <line>160</line>
-          <option name="timeStamp" value="9" />
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/connection/comsumer.go</url>
+          <line>90</line>
+          <option name="timeStamp" value="16" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/html/im_sdk.html</url>
-          <line>183</line>
-          <properties lambdaOrdinal="-1" />
+          <line>188</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
